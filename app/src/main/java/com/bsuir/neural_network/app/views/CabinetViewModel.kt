@@ -1,5 +1,7 @@
 package com.bsuir.neural_network.app.views
 
+import android.content.Intent
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,6 +10,7 @@ import com.bsuir.neural_network.app.dto.HistoryAnswerDTO
 import com.bsuir.neural_network.app.dto.ImageAnswerDTO
 import com.bsuir.neural_network.app.dto.utils.HttpResponse
 import com.bsuir.neural_network.app.repository.CabinetRepository
+import com.bsuir.neural_network.app.screens.auth.MainActivity
 import com.bsuir.neural_network.app.utils.MutableLiveEvent
 import com.bsuir.neural_network.app.utils.MutableUnitLiveEvent
 import com.bsuir.neural_network.app.utils.publishEvent
@@ -69,11 +72,13 @@ class CabinetViewModel (
 
     private fun showToast(mes: String) = _message.publishEvent(mes)
 
-    fun subscribe() {
+    fun subscribe(activity: FragmentActivity?) {
         viewModelScope.launch {
             var res: Response<HttpResponse> = cabinetRepository.subscribe()
             if (res.isSuccessful){
                 showToast("Вы успешно подписались!")
+                cabinetRepository.logout()
+                activity!!.startActivity(Intent(activity, MainActivity::class.java))
             } else {
                 val gson = GsonBuilder().setDateFormat("MM-dd-yyyy hh:mm:ss").create()
                 val mes = gson.fromJson(res.errorBody()!!.string(), HttpResponse::class.java).message
@@ -81,6 +86,8 @@ class CabinetViewModel (
             }
         }
     }
+
+
 
 
 }

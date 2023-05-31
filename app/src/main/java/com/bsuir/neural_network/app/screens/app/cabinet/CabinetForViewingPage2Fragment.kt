@@ -47,7 +47,7 @@ class CabinetForViewingPage2Fragment : Fragment() {
             2 -> {
                 customizeScreen(b = false, b1 = false, b2 = true)
                 binding.btSub.setOnClickListener {
-                    viewModel.subscribe()
+                    viewModel.subscribe(activity)
                 }
             }
         }

@@ -61,5 +61,11 @@ class CabinetRepository (
         return res
     }
 
+    fun logout(){
+        appSettings.setCurrentToken("")
+        appSettings.setCurrentUsername("")
+        appSettings.setCurrentRole("")
+    }
+
 
 }
