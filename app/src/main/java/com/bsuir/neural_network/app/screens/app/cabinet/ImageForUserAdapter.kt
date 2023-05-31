@@ -1,4 +1,4 @@
-package com.bsuir.neural_network.app.screens.app.home
+package com.bsuir.neural_network.app.screens.app.cabinet
 
 import android.view.LayoutInflater
 import android.view.Menu
@@ -12,9 +12,7 @@ import com.bsuir.neural_network.app.dto.ImageAnswerDTO
 import com.bsuir.neural_network.databinding.ItemImageBinding
 import com.bumptech.glide.Glide
 
-interface ImageActionListener {
-    fun onImageDetails(image: ImageAnswerDTO)
-    fun onImageSave(image: ImageAnswerDTO)
+interface ImageForUserActionListener {
     fun copyLink(image: ImageAnswerDTO)
 }
 
@@ -40,9 +38,9 @@ class ImageDiffCallback(
     }
 }
 
-class ImageAdapter(
-    private val actionListener: ImageActionListener
-) : RecyclerView.Adapter<ImageAdapter.ImageViewHolder>(), View.OnClickListener {
+class ImageForUserAdapter(
+    private val actionListener: ImageForUserActionListener
+) : RecyclerView.Adapter<ImageForUserAdapter.ImageViewHolder>(), View.OnClickListener {
 
     class ImageViewHolder(val binding: ItemImageBinding): RecyclerView.ViewHolder(binding.root)
 
@@ -91,9 +89,6 @@ class ImageAdapter(
             R.id.moreImageViewButton -> {
                 showPopupMenu(v)
             }
-            else -> {
-                actionListener.onImageDetails(movie)
-            }
         }
     }
 
@@ -101,13 +96,9 @@ class ImageAdapter(
         val popupMenu = PopupMenu(v.context, v)
         val context = v.context
         val image = v.tag as ImageAnswerDTO
-        popupMenu.menu.add(0, SAVE, Menu.NONE, context.getString(R.string.save))
         popupMenu.menu.add(1, COPY, Menu.NONE, context.getString(R.string.copy))
         popupMenu.setOnMenuItemClickListener{
             when (it.itemId){
-                SAVE -> {
-                    actionListener.onImageSave(image)
-                }
                 COPY -> {
                     actionListener.copyLink(image)
                 }
@@ -118,8 +109,7 @@ class ImageAdapter(
     }
 
     companion object{
-        private const val SAVE = 1
-        private const val COPY = 2
+        private const val COPY = 1
     }
 
 }

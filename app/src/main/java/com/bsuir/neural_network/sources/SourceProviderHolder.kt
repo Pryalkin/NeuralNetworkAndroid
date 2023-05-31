@@ -15,6 +15,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 object SourceProviderHolder {
 
@@ -49,6 +50,9 @@ object SourceProviderHolder {
         return OkHttpClient.Builder()
             .addInterceptor(createAuthorizationInterceptor(Singletons.appSettings))
             .addInterceptor(createLoggingInterceptor())
+            .connectTimeout(180, TimeUnit.SECONDS)
+            .writeTimeout(180, TimeUnit.SECONDS)
+            .readTimeout(180, TimeUnit.SECONDS)
             .build()
     }
 

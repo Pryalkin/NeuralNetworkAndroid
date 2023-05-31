@@ -1,26 +1,28 @@
-package com.bsuir.neural_network.app.screens.app.home
+package com.bsuir.neural_network.app.screens.app.cabinet
 
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
+import android.widget.Toast
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bsuir.neural_network.R
+import com.bsuir.neural_network.app.dto.HistoryAnswerDTO
 import com.bsuir.neural_network.app.dto.ImageAnswerDTO
+import com.bsuir.neural_network.databinding.ItemHistoryBinding
 import com.bsuir.neural_network.databinding.ItemImageBinding
 import com.bumptech.glide.Glide
 
-interface ImageActionListener {
-    fun onImageDetails(image: ImageAnswerDTO)
-    fun onImageSave(image: ImageAnswerDTO)
-    fun copyLink(image: ImageAnswerDTO)
+interface HistoryForUserActionListener {
+    fun copyLink(history: HistoryAnswerDTO)
+    fun onHistoryDetails(history: HistoryAnswerDTO)
 }
 
-class ImageDiffCallback(
-    private val oldList: List<ImageAnswerDTO>,
-    private val newList: List<ImageAnswerDTO>
+class HistoryDiffCallback(
+    private val oldList: List<HistoryAnswerDTO>,
+    private val newList: List<HistoryAnswerDTO>
 ): DiffUtil.Callback() {
 
     override fun getOldListSize(): Int = oldList.size
@@ -40,39 +42,39 @@ class ImageDiffCallback(
     }
 }
 
-class ImageAdapter(
-    private val actionListener: ImageActionListener
-) : RecyclerView.Adapter<ImageAdapter.ImageViewHolder>(), View.OnClickListener {
+class HistoryForUserAdapter(
+    private val actionListener: HistoryForUserActionListener
+) : RecyclerView.Adapter<HistoryForUserAdapter.HistoryViewHolder>(), View.OnClickListener {
 
-    class ImageViewHolder(val binding: ItemImageBinding): RecyclerView.ViewHolder(binding.root)
+    class HistoryViewHolder(val binding: ItemHistoryBinding): RecyclerView.ViewHolder(binding.root)
 
-    var imageAnswerDTOs: List<ImageAnswerDTO> = emptyList()
+    var historyAnswerDTOs: List<HistoryAnswerDTO> = emptyList()
         set(newValue) {
-            val diffCallback = ImageDiffCallback(field, newValue)
+            val diffCallback = HistoryDiffCallback(field, newValue)
             val diffResult = DiffUtil.calculateDiff(diffCallback)
             field = newValue
             diffResult.dispatchUpdatesTo(this)
         }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImageViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HistoryViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        val binding = ItemImageBinding.inflate(inflater, parent, false)
+        val binding = ItemHistoryBinding.inflate(inflater, parent, false)
         binding.root.setOnClickListener(this)
         binding.moreImageViewButton.setOnClickListener(this)
-        return ImageViewHolder(binding)
+        return HistoryViewHolder(binding)
     }
 
-    override fun onBindViewHolder(holder: ImageViewHolder, position: Int) {
-        val image = imageAnswerDTOs[position]
+    override fun onBindViewHolder(holder: HistoryViewHolder, position: Int) {
+        val history = historyAnswerDTOs[position]
         val context = holder.itemView.context
         with(holder.binding) {
-            holder.itemView.tag = image
-            moreImageViewButton.tag = image
-            val result = "Ключевые слова: ${image.keywords.joinToString(separator = ", ")}"
+            holder.itemView.tag = history
+            moreImageViewButton.tag = history
+            val result = "Ключевые слова: ${history.words.joinToString(separator = ", ")}"
             tvKeywords.text = result
-            if(image.url.isNotBlank()){
+            if(history.url.isNotBlank()){
                 Glide.with(imageView.context)
-                    .load(image.url)
+                    .load(history.url)
 //                    .circleCrop()
                     .placeholder(R.drawable.ic_image)
                     .error(R.drawable.ic_image)
@@ -83,33 +85,28 @@ class ImageAdapter(
         }
     }
 
-    override fun getItemCount(): Int = imageAnswerDTOs.size
+    override fun getItemCount(): Int = historyAnswerDTOs.size
 
     override fun onClick(v: View) {
-        val movie = v.tag as ImageAnswerDTO
+        val history = v.tag as HistoryAnswerDTO
         when (v.id){
             R.id.moreImageViewButton -> {
                 showPopupMenu(v)
-            }
-            else -> {
-                actionListener.onImageDetails(movie)
-            }
+            }else -> {
+            actionListener.onHistoryDetails(history)
+        }
         }
     }
 
     private fun showPopupMenu(v: View) {
         val popupMenu = PopupMenu(v.context, v)
         val context = v.context
-        val image = v.tag as ImageAnswerDTO
-        popupMenu.menu.add(0, SAVE, Menu.NONE, context.getString(R.string.save))
+        val history = v.tag as HistoryAnswerDTO
         popupMenu.menu.add(1, COPY, Menu.NONE, context.getString(R.string.copy))
         popupMenu.setOnMenuItemClickListener{
             when (it.itemId){
-                SAVE -> {
-                    actionListener.onImageSave(image)
-                }
                 COPY -> {
-                    actionListener.copyLink(image)
+                    actionListener.copyLink(history)
                 }
             }
             return@setOnMenuItemClickListener true
@@ -118,8 +115,7 @@ class ImageAdapter(
     }
 
     companion object{
-        private const val SAVE = 1
-        private const val COPY = 2
+        private const val COPY = 1
     }
 
 }

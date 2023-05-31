@@ -6,7 +6,7 @@
     android:layout_height="match_parent">
 
     <com.google.android.material.tabs.TabLayout
-        android:id="@+id/tab_layout3"
+        android:id="@+id/tab_home"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toTopOf="@id/home"
@@ -21,6 +21,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tab_layout3"/>
+        app:layout_constraintTop_toBottomOf="@id/tab_home"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -11,6 +11,7 @@ import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -21,23 +22,22 @@ import androidx.recyclerview.widget.LinearLayoutManager
 
 import com.bsuir.neural_network.R
 import com.bsuir.neural_network.app.dto.ImageAnswerDTO
+import com.bsuir.neural_network.app.dto.utils.Role
+import com.bsuir.neural_network.app.dto.utils.SearchScore
 import com.bsuir.neural_network.app.utils.observeEvent
 import com.bsuir.neural_network.app.views.HomeViewModel
 import com.bsuir.neural_network.databinding.FragmentHomeForViewingPage2Binding
 import com.karumi.dexter.Dexter
-import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionDeniedResponse
 import com.karumi.dexter.listener.PermissionGrantedResponse
 import com.karumi.dexter.listener.PermissionRequest
-import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.karumi.dexter.listener.single.PermissionListener
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import java.io.File
 import kotlin.properties.Delegates
-
 
 class HomeForViewingPage2Fragment : Fragment(){
 
@@ -74,21 +74,59 @@ class HomeForViewingPage2Fragment : Fragment(){
 
         when (pageNumber) {
             0 -> {
+                initButton()
+                seeSpinnerForSearchScore()
                 customizeScreen(b = true, b1 = false)
                 configureTheAdapterForTheImage()
+                binding.btDownload.setOnClickListener {
+                    openImageChooser()
+                }
+                binding.btImageSearch.setOnClickListener {
+                    if(binding.etKeyws.text.toString().isEmpty()){
+                        Toast.makeText(requireActivity(), "Введите ключевые слова", Toast.LENGTH_SHORT).show()
+                    } else {
+                        val body: MultipartBody.Part = uploadFile(selectedImageUri)
+                        val searchScore = binding.spinnerSearchScore.selectedItem.toString()
+                        viewModel.similarImageSearch(searchScore, binding.etKeyws.text.toString(), body)
+                        initButton()
+                        binding.etKeyws.setText("")
+                    }
+                }
+                binding.btCancell.setOnClickListener {
+                    initButton()
+                }
+                binding.btFind.setOnClickListener {
+                    if(binding.etFind.text.toString().isEmpty()){
+                        Toast.makeText(requireActivity(), "Введите ключевое слово!", Toast.LENGTH_SHORT).show()
+                    } else {
+                        val str = binding.etFind.text.toString()
+                        viewModel.findImages(str)
+                        binding.etFind.setText("")
+                    }
+                }
             }
             1 -> {
                 customizeScreen(b = false, b1 = true)
+
                 binding.imageView.setOnClickListener {
                     openImageChooser()
                 }
                 binding.buttonUpload.setOnClickListener {
-                    uploadFile(selectedImageUri)
+                    val body: MultipartBody.Part = uploadFile(selectedImageUri)
+                    val keywords = binding.etKeywords.text.toString()
+                    viewModel.upload(keywords, body)
                 }
             }
         }
         observeShowMessageEvent()
         return binding.root
+    }
+
+    private fun initButton() {
+        binding.btDownload.visibility = View.VISIBLE
+        binding.etKeyws.visibility = View.GONE
+        binding.spinnerSearchScore.visibility = View.GONE
+        binding.btCancell.visibility = View.GONE
     }
 
     private fun validatePermission() {
@@ -138,17 +176,19 @@ class HomeForViewingPage2Fragment : Fragment(){
                 REQUEST_CODE_PICK_IMAGE -> {
                     selectedImageUri = data?.data
                     binding.imageView.setImageURI(selectedImageUri)
+                    binding.btDownload.visibility = View.GONE
+                    binding.etKeyws.visibility = View.VISIBLE
+                    binding.spinnerSearchScore.visibility = View.VISIBLE
+                    binding.btCancell.visibility = View.VISIBLE
                 }
             }
         }
     }
 
-    private fun uploadFile(uri: Uri?) {
-        val keywords = binding.etKeywords.text.toString()
+    private fun uploadFile(uri: Uri?): MultipartBody.Part  {
         val file = File(getRealPathFromURI(uri))
         val requestFile = RequestBody.create("multipart/form-data".toMediaTypeOrNull(), file)
-        val body = MultipartBody.Part.createFormData("file", file.name, requestFile)
-        viewModel.upload(keywords, body)
+        return MultipartBody.Part.createFormData("file", file.name, requestFile)
     }
 
     private fun getRealPathFromURI(uri: Uri?): String? {
@@ -163,28 +203,30 @@ class HomeForViewingPage2Fragment : Fragment(){
         return realPath
     }
 
-
-
     private fun configureTheAdapterForTheImage() {
         imageAdapter = ImageAdapter(object  : ImageActionListener{
             override fun onImageDetails(image: ImageAnswerDTO) {
                 TODO("Not yet implemented")
             }
-
             override fun onImageSave(image: ImageAnswerDTO) {
-                TODO("Not yet implemented")
+                viewModel.onImageSave(image.id)
             }
-
+            override fun copyLink(image: ImageAnswerDTO) {
+                val sendIntent: Intent = Intent().apply {
+                    action = Intent.ACTION_SEND
+                    putExtra(Intent.EXTRA_TEXT, image.url)
+                    type = "text/plain"
+                }
+                val shareIntent = Intent.createChooser(sendIntent, null)
+                startActivity(shareIntent)
+            }
         })
-
         viewModel.images.observe(viewLifecycleOwner){
             imageAdapter.imageAnswerDTOs = it
         }
-
         val layoutManagerAnnouncement = LinearLayoutManager(context)
         binding.recyclerViewImage.layoutManager = layoutManagerAnnouncement
         binding.recyclerViewImage.adapter = imageAdapter
-
         val itemAnimatorAnnouncement = binding.recyclerViewImage.itemAnimator
         if (itemAnimatorAnnouncement is DefaultItemAnimator){
             itemAnimatorAnnouncement.supportsChangeAnimations = false
@@ -203,6 +245,21 @@ class HomeForViewingPage2Fragment : Fragment(){
             if (b1) createImage.visibility = View.VISIBLE
             else createImage.visibility = View.GONE
         }
+    }
+
+    private fun seeSpinnerForSearchScore() {
+        val result = if (viewModel.getRole() == Role.ROLE_USER.name) {
+            SearchScore.values().filter {it.getValue() < 8}.toTypedArray()
+        } else
+            SearchScore.values()
+        val adapter: ArrayAdapter<SearchScore> = ArrayAdapter(
+            requireContext(),
+            android.R.layout.simple_spinner_item,
+            result
+        )
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        binding.spinnerSearchScore.adapter = adapter
+        binding.spinnerSearchScore.setSelection(5)
     }
 
     companion object {

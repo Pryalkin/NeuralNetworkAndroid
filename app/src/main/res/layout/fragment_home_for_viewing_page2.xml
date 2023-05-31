@@ -11,11 +11,22 @@
         android:layout_height="match_parent">
 
         <EditText
+            android:id="@+id/etKeyws"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:ems="12"
+            android:hint="Введите ключевые слова"
+            android:inputType="textPersonName"
+            app:layout_constraintStart_toStartOf="@+id/etFind"
+            app:layout_constraintTop_toBottomOf="@+id/etFind" />
+
+        <EditText
             android:id="@+id/etFind"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="15dp"
-            android:layout_marginTop="15dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="12dp"
             android:ems="12"
             android:hint="Поиск"
             android:inputType="textPersonName"
@@ -39,7 +50,25 @@
             android:layout_marginTop="5dp"
             android:text="Поиск по изображению"
             app:layout_constraintEnd_toEndOf="@+id/btFind"
+            app:layout_constraintTop_toBottomOf="@+id/etKeyws" />
+
+        <Button
+            android:id="@+id/btDownload"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="Загрузить"
+            app:layout_constraintEnd_toStartOf="@+id/btImageSearch"
             app:layout_constraintStart_toStartOf="@+id/etFind"
+            app:layout_constraintTop_toBottomOf="@+id/etFind" />
+
+        <Spinner
+            android:id="@+id/spinnerSearchScore"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            app:layout_constraintEnd_toEndOf="@+id/btFind"
+            app:layout_constraintStart_toStartOf="@+id/btFind"
             app:layout_constraintTop_toBottomOf="@+id/etFind" />
 
         <androidx.recyclerview.widget.RecyclerView
@@ -52,6 +81,15 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/btImageSearch"
             app:layout_constraintVertical_bias="1.0" />
+
+        <Button
+            android:id="@+id/btCancell"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="Отмена"
+            app:layout_constraintStart_toStartOf="@+id/etKeyws"
+            app:layout_constraintTop_toBottomOf="@+id/etKeyws" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

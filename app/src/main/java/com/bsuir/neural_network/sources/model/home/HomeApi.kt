@@ -22,4 +22,15 @@ interface HomeApi {
     @GET("image/getAll")
     suspend fun getAllImages(): Response<List<ImageAnswerDTO>>
 
+    @Multipart
+    @POST("image/similar_image_search")
+        suspend fun similarImageSearch( @Query("searchScore") searchScore: String,
+                                        @Query("keywords") keywords: String,
+                                        @Part file: MultipartBody.Part): Response<List<ImageAnswerDTO>>
+
+    @POST("image/user/save")
+    suspend fun onImageSave(@Query("id") id: Long): Response<HttpResponse>
+
+    @GET("image/user/get/images")
+    suspend fun findImages(@Query("str") str: String): Response<List<ImageAnswerDTO>>
 }

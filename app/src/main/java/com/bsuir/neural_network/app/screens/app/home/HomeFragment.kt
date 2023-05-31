@@ -28,12 +28,12 @@ class HomeFragment : Fragment() {
         val pageAdapter: FragmentStateAdapter = HomeAdapter(requireActivity(), role)
         pager.adapter = pageAdapter
 
-        val tabLayout: TabLayout = binding.tabLayout3
+        val tabLayout: TabLayout = binding.tabHome
         val tabLayoutMediator = TabLayoutMediator(tabLayout, pager
         ) { tab, position ->
             when (position) {
                 0 -> {
-                    tab.text = "Фильмы"
+                    tab.text = "Изображения"
                 }
                 1 -> {
                     tab.text = "Добавить"

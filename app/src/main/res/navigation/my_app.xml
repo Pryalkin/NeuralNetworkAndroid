@@ -7,7 +7,7 @@
     <fragment
         android:id="@+id/homeFragment"
         android:name="com.bsuir.neural_network.app.screens.app.home.HomeFragment"
-        android:label="Поиск фильмов"
+        android:label="Поиск изображений"
         tools:layout="@layout/fragment_home" >
         <action
             android:id="@+id/action_homeFragment_to_cabinetFragment"
@@ -18,7 +18,7 @@
     </fragment>
     <fragment
         android:id="@+id/cabinetFragment"
-        android:name="com.bsuir.neural_network.app.screens.app.cabinetFragment"
+        android:name="com.bsuir.neural_network.app.screens.app.cabinet.CabinetFragment"
         android:label="Кабинет"
         tools:layout="@layout/fragment_cabinet" >
         <action

@@ -5,11 +5,13 @@ import androidx.fragment.app.Fragment
 import com.bsuir.neural_network.sources.backend.SourcesProvider
 import com.bsuir.neural_network.app.repository.HomeRepository
 import com.bsuir.neural_network.app.repository.AuthRepository
+import com.bsuir.neural_network.app.repository.CabinetRepository
 import com.bsuir.neural_network.app.screens.Navigator
 import com.bsuir.neural_network.app.setting.AppSettings
 import com.bsuir.neural_network.app.setting.SharedPreferencesAppSettings
 import com.bsuir.neural_network.sources.SourceProviderHolder
 import com.bsuir.neural_network.sources.model.auth.AuthSource
+import com.bsuir.neural_network.sources.model.cabinet.CabinetSource
 import com.bsuir.neural_network.sources.model.home.HomeSource
 
 
@@ -34,6 +36,10 @@ object Singletons {
         sourcesProvider.getHomeSource()
     }
 
+    private val cabinetSource: CabinetSource by lazy {
+        sourcesProvider.getCabinetSource()
+    }
+
     // repository
     val authRepository: AuthRepository by lazy {
         AuthRepository(
@@ -45,6 +51,13 @@ object Singletons {
     val homeRepository: HomeRepository by lazy {
         HomeRepository(
             homeSource = homeSource,
+            appSettings = appSettings
+        )
+    }
+
+    val cabinetRepository: CabinetRepository by lazy {
+        CabinetRepository(
+            cabinetSource = cabinetSource,
             appSettings = appSettings
         )
     }

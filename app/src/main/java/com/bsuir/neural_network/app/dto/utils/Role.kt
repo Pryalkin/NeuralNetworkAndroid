@@ -6,6 +6,7 @@ import com.bsuir.neural_network.app.dto.utils.Authority.USER_AUTHORITIES
 
 enum class Role(vararg authorities: String) {
     ROLE_USER(*USER_AUTHORITIES),
+    ROLE_SUBSCRIBER(*SUBSCRIBER_AUTHORITIES),
     ROLE_ADMIN(*ADMIN_AUTHORITIES);
 
     val authorities: Array<String>

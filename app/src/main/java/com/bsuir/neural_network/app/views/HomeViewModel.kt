@@ -40,7 +40,7 @@ class HomeViewModel (
         viewModelScope.launch {
             var res: Response<HttpResponse> = homeRepository.upload(keywords, body)
             if (res.isSuccessful){
-                showToast("Вы успешно зарегистрировали фильм!")
+                showToast("Вы успешно зарегистрировали изображение!")
             } else {
                 val gson = GsonBuilder().setDateFormat("MM-dd-yyyy hh:mm:ss").create()
                 val mes = gson.fromJson(res.errorBody()!!.string(), HttpResponse::class.java).message
@@ -62,7 +62,50 @@ class HomeViewModel (
         }
     }
 
+    fun similarImageSearch(searchScore: String, keywords: String, body: MultipartBody.Part) {
+        viewModelScope.launch {
+            var res: Response<List<ImageAnswerDTO>> = homeRepository.similarImageSearch(searchScore, keywords, body)
+            if (res.isSuccessful){
+                _images.value = res.body()
+                showToast("Поиск изображений прошел успешно!")
+            } else {
+                val gson = GsonBuilder().setDateFormat("MM-dd-yyyy hh:mm:ss").create()
+                val mes = gson.fromJson(res.errorBody()!!.string(), HttpResponse::class.java).message
+                showToast(mes)
+            }
+        }
+    }
+
+    fun onImageSave(id: Long) {
+        viewModelScope.launch {
+            var res: Response<HttpResponse> = homeRepository.onImageSave(id)
+            if (res.isSuccessful){
+                showToast("Изображение успешно сохранено!")
+            } else {
+                val gson = GsonBuilder().setDateFormat("MM-dd-yyyy hh:mm:ss").create()
+                val mes = gson.fromJson(res.errorBody()!!.string(), HttpResponse::class.java).message
+                showToast(mes)
+            }
+        }
+    }
+
+    fun findImages(str: String) {
+        viewModelScope.launch {
+            var res: Response<List<ImageAnswerDTO>> = homeRepository.findImages(str)
+            if (res.isSuccessful){
+                _images.value = res.body()
+                showToast("Поиск изображений прошел успешно!")
+            } else {
+                val gson = GsonBuilder().setDateFormat("MM-dd-yyyy hh:mm:ss").create()
+                val mes = gson.fromJson(res.errorBody()!!.string(), HttpResponse::class.java).message
+                showToast(mes)
+            }
+        }
+    }
+
     private fun showToast(mes: String) = _message.publishEvent(mes)
+
+
 
 //    fun getImage(id: Long) {
 //        viewModelScope.launch {

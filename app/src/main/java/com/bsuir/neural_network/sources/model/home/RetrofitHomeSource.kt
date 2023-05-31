@@ -25,5 +25,23 @@ class RetrofitHomeSource(
         homeApi.getAllImages()
     }
 
+    override suspend fun similarImageSearch(
+        searchScore: String,
+        keywords: String,
+        body: MultipartBody.Part
+    ): Response<List<ImageAnswerDTO>> = wrapRetrofitExceptions {
+        delay(1000)
+        homeApi.similarImageSearch(searchScore, keywords, body)
+    }
+
+    override suspend fun onImageSave(id: Long): Response<HttpResponse> = wrapRetrofitExceptions {
+        delay(1000)
+        homeApi.onImageSave(id)
+    }
+
+    override suspend fun findImages(str: String): Response<List<ImageAnswerDTO>> = wrapRetrofitExceptions {
+        delay(1000)
+        homeApi.findImages(str)
+    }
 
 }
