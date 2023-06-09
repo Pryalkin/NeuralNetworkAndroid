@@ -3,7 +3,7 @@ package com.bsuir.neural_network.app.views
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bsuir.neural_network.Singletons
-import com.bsuir.neural_network.app.dto.UserDTO
+import com.bsuir.neural_network.app.dto.LoginUserDTO
 import com.bsuir.neural_network.app.dto.utils.HttpResponse
 import com.bsuir.neural_network.app.repository.AuthRepository
 import com.bsuir.neural_network.app.utils.MutableLiveEvent
@@ -20,7 +20,7 @@ class RegistrationViewModel(
     private val _message = MutableLiveEvent<String>()
     val message = _message.share()
 
-    fun registration(userDTO: UserDTO){
+    fun registration(userDTO: LoginUserDTO){
         viewModelScope.launch {
             var res: Response<HttpResponse> = authRepository.registration(userDTO)
             if (res.isSuccessful){

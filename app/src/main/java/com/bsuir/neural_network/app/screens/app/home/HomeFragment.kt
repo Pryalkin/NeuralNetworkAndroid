@@ -33,10 +33,10 @@ class HomeFragment : Fragment() {
         ) { tab, position ->
             when (position) {
                 0 -> {
-                    tab.text = "Изображения"
+                    tab.text = "Заявки"
                 }
                 1 -> {
-                    tab.text = "Добавить"
+                    tab.text = "Регистрация"
                 }
             }
         }

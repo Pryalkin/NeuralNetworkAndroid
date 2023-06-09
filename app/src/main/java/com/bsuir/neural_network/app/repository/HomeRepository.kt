@@ -1,7 +1,8 @@
 package com.bsuir.neural_network.app.repository
 
-import com.bsuir.neural_network.app.dto.ImageAnswerDTO
 import com.bsuir.neural_network.app.dto.utils.HttpResponse
+import com.bsuir.neural_network.app.dto.utils.PersonDTO
+import com.bsuir.neural_network.app.dto.utils.SampleApplication
 import com.bsuir.neural_network.app.setting.AppSettings
 import com.bsuir.neural_network.sources.exception.BackendException
 import com.bsuir.neural_network.sources.exception.InvalidCredentialsException
@@ -18,9 +19,23 @@ class HomeRepository(
         return appSettings.getCurrentRole()
     }
 
-    suspend fun upload(keywords: String, body: MultipartBody.Part): Response<HttpResponse> {
+    suspend fun getAllSA(): Response<List<SampleApplication>> {
+        val res: Response<List<SampleApplication>> = try {
+            homeSource.getAllSA()
+        } catch (e: Exception) {
+            if (e is BackendException && e.code == 401) {
+                // map 401 error for sign-in to InvalidCredentialsException
+                throw InvalidCredentialsException(e)
+            } else {
+                throw e
+            }
+        }
+        return res
+    }
+
+    suspend fun personRegistration(personDTO: PersonDTO, body: MultipartBody.Part): Response<HttpResponse> {
         val res: Response<HttpResponse> = try {
-            homeSource.upload(keywords, body)
+            homeSource.personRegistration(personDTO, body)
         } catch (e: Exception) {
             if (e is BackendException && e.code == 401) {
                 // map 401 error for sign-in to InvalidCredentialsException
@@ -32,9 +47,9 @@ class HomeRepository(
         return res
     }
 
-    suspend fun getAllImages(): Response<List<ImageAnswerDTO>> {
-        val res: Response<List<ImageAnswerDTO>> = try {
-            homeSource.getAllImages()
+    suspend fun applicationRegistration(id: Long): Response<HttpResponse> {
+        val res: Response<HttpResponse> = try {
+            homeSource.applicationRegistration(id)
         } catch (e: Exception) {
             if (e is BackendException && e.code == 401) {
                 // map 401 error for sign-in to InvalidCredentialsException
@@ -46,46 +61,10 @@ class HomeRepository(
         return res
     }
 
-    suspend fun similarImageSearch(searchScore: String, keywords: String, body: MultipartBody.Part): Response<List<ImageAnswerDTO>> {
-        val res: Response<List<ImageAnswerDTO>> = try {
-            homeSource.similarImageSearch(searchScore, keywords, body)
-        } catch (e: Exception) {
-            if (e is BackendException && e.code == 401) {
-                // map 401 error for sign-in to InvalidCredentialsException
-                throw InvalidCredentialsException(e)
-            } else {
-                throw e
-            }
-        }
-        return res
-    }
-
-    suspend fun onImageSave(id: Long): Response<HttpResponse> {
-        val res:Response<HttpResponse> = try {
-            homeSource.onImageSave(id)
-        } catch (e: Exception) {
-            if (e is BackendException && e.code == 401) {
-                // map 401 error for sign-in to InvalidCredentialsException
-                throw InvalidCredentialsException(e)
-            } else {
-                throw e
-            }
-        }
-        return res
-    }
-
-    suspend fun findImages(str: String): Response<List<ImageAnswerDTO>> {
-        val res:Response<List<ImageAnswerDTO>> = try {
-            homeSource.findImages(str)
-        } catch (e: Exception) {
-            if (e is BackendException && e.code == 401) {
-                // map 401 error for sign-in to InvalidCredentialsException
-                throw InvalidCredentialsException(e)
-            } else {
-                throw e
-            }
-        }
-        return res
+    fun logout() {
+        appSettings.setCurrentToken("")
+        appSettings.setCurrentUsername("")
+        appSettings.setCurrentRole("")
     }
 
 }

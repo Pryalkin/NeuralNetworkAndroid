@@ -7,31 +7,28 @@
     android:layout_height="wrap_content"
     android:background="?android:attr/selectableItemBackground">
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="320dp"
-        android:layout_height="480dp"
-        android:layout_marginTop="10dp"
-        app:layout_constraintEnd_toEndOf="@+id/tvKeywords"
-        app:layout_constraintStart_toStartOf="@+id/tvKeywords"
-        app:layout_constraintTop_toBottomOf="@+id/tvKeywords"
-        tools:src="@drawable/ic_image" />
-
     <TextView
-        android:id="@+id/tvKeywords"
+        android:id="@+id/tvForm"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="15dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginEnd="15dp"
-        android:ellipsize="end"
-        android:lines="1"
-        android:textColor="@color/black"
-        android:textSize="16sp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:hint="Форма 333"
         app:layout_constraintEnd_toStartOf="@+id/moreImageViewButton"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="KEYWORDS" />
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tvText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        android:hint="Выдача и обмен пасморта - истечение срока действия (25, 45 лет)"
+        app:layout_constraintEnd_toStartOf="@+id/moreImageViewButton"
+        app:layout_constraintStart_toStartOf="@+id/tvForm"
+        app:layout_constraintTop_toBottomOf="@+id/tvForm" />
 
     <ImageView
         android:id="@+id/moreImageViewButton"
@@ -49,7 +46,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:barrierDirection="bottom"
-        app:constraint_referenced_ids="imageView"
         tools:layout_editor_absoluteY="124dp" />
 
     <Space

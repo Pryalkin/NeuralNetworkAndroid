@@ -28,13 +28,13 @@ class CabinetFragment  : Fragment() {
         ) { tab, position ->
             when (position) {
                 0 -> {
-                    tab.text = "Сохраненки"
+                    tab.text = "Неактивные"
                 }
                 1 -> {
-                    tab.text = "История"
+                    tab.text = "Активные"
                 }
                 2 -> {
-                    tab.text = "Подписка"
+                    tab.text = "Готовые"
                 }
             }
         }

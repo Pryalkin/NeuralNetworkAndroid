@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.viewModels
-import com.bsuir.neural_network.app.dto.UserDTO
+import com.bsuir.neural_network.app.dto.LoginUserDTO
 import com.bsuir.neural_network.app.utils.observeEvent
 import com.bsuir.neural_network.app.views.RegistrationViewModel
 import com.bsuir.neural_network.databinding.FragmentRegistrationBinding
@@ -27,7 +27,7 @@ class RegistrationFragment : Fragment() {
         binding = FragmentRegistrationBinding.inflate(inflater, container, false)
         binding.apply {
             btnSend.setOnClickListener {
-                val userDTO = UserDTO(
+                val userDTO = LoginUserDTO(
                     username = edLogin.text.toString(),
                     password = edPassword.text.toString(),
                     password2 = edPassword2.text.toString()

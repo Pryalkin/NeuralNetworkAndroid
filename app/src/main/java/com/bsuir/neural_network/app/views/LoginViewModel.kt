@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bsuir.neural_network.Singletons
 import com.bsuir.neural_network.app.dto.LoginUserAnswerDTO
-import com.bsuir.neural_network.app.dto.UserDTO
+import com.bsuir.neural_network.app.dto.LoginUserDTO
 import com.bsuir.neural_network.app.dto.utils.HttpResponse
 import com.bsuir.neural_network.app.repository.AuthRepository
 import com.bsuir.neural_network.app.utils.MutableLiveEvent
@@ -25,7 +25,7 @@ class LoginViewModel(
     private val _navigateToTabsEvent = MutableUnitLiveEvent()
     val navigateToTabsEvent = _navigateToTabsEvent.share()
 
-    fun login(userDTO: UserDTO) {
+    fun login(userDTO: LoginUserDTO) {
         viewModelScope.launch {
             var res: Response<LoginUserAnswerDTO> = authRepository.login(userDTO)
             if (res.isSuccessful){

@@ -11,7 +11,6 @@ import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -19,11 +18,10 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
-
 import com.bsuir.neural_network.R
-import com.bsuir.neural_network.app.dto.ImageAnswerDTO
+import com.bsuir.neural_network.app.dto.utils.PersonDTO
 import com.bsuir.neural_network.app.dto.utils.Role
-import com.bsuir.neural_network.app.dto.utils.SearchScore
+import com.bsuir.neural_network.app.dto.utils.SampleApplication
 import com.bsuir.neural_network.app.utils.observeEvent
 import com.bsuir.neural_network.app.views.HomeViewModel
 import com.bsuir.neural_network.databinding.FragmentHomeForViewingPage2Binding
@@ -37,6 +35,8 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import java.io.File
+import java.text.SimpleDateFormat
+import java.util.*
 import kotlin.properties.Delegates
 
 class HomeForViewingPage2Fragment : Fragment(){
@@ -44,7 +44,7 @@ class HomeForViewingPage2Fragment : Fragment(){
     private var pageNumber by Delegates.notNull<Int>()
     private lateinit var binding: FragmentHomeForViewingPage2Binding
     private val viewModel by viewModels<HomeViewModel>()
-    private lateinit var imageAdapter: ImageAdapter
+    private lateinit var saAdapter: AppAdapter
     private lateinit var myLauncher : ActivityResultLauncher<Intent>
 
     private var selectedImageUri: Uri? = null
@@ -71,62 +71,70 @@ class HomeForViewingPage2Fragment : Fragment(){
         savedInstanceState: Bundle?,
     ): View? {
         binding = FragmentHomeForViewingPage2Binding.inflate(inflater)
-
         when (pageNumber) {
             0 -> {
-                initButton()
-                seeSpinnerForSearchScore()
                 customizeScreen(b = true, b1 = false)
                 configureTheAdapterForTheImage()
-                binding.btDownload.setOnClickListener {
-                    openImageChooser()
-                }
-                binding.btImageSearch.setOnClickListener {
-                    if(binding.etKeyws.text.toString().isEmpty()){
-                        Toast.makeText(requireActivity(), "Введите ключевые слова", Toast.LENGTH_SHORT).show()
-                    } else {
-                        val body: MultipartBody.Part = uploadFile(selectedImageUri)
-                        val searchScore = binding.spinnerSearchScore.selectedItem.toString()
-                        viewModel.similarImageSearch(searchScore, binding.etKeyws.text.toString(), body)
-                        initButton()
-                        binding.etKeyws.setText("")
-                    }
-                }
-                binding.btCancell.setOnClickListener {
-                    initButton()
-                }
-                binding.btFind.setOnClickListener {
-                    if(binding.etFind.text.toString().isEmpty()){
-                        Toast.makeText(requireActivity(), "Введите ключевое слово!", Toast.LENGTH_SHORT).show()
-                    } else {
-                        val str = binding.etFind.text.toString()
-                        viewModel.findImages(str)
-                        binding.etFind.setText("")
-                    }
-                }
             }
             1 -> {
                 customizeScreen(b = false, b1 = true)
-
                 binding.imageView.setOnClickListener {
+                    Toast.makeText(requireActivity(), "Кнопка нажата", Toast.LENGTH_SHORT).show()
                     openImageChooser()
                 }
-                binding.buttonUpload.setOnClickListener {
-                    val body: MultipartBody.Part = uploadFile(selectedImageUri)
-                    val keywords = binding.etKeywords.text.toString()
-                    viewModel.upload(keywords, body)
+                binding.apply {
+                    dtnSelectedDate.setOnClickListener {
+                        val datePickerFragment = DatePickerFragment()
+                        val supportFragmentManager = requireActivity().supportFragmentManager
+
+                        supportFragmentManager.setFragmentResultListener(
+                            "REQUEST_KEY",
+                            viewLifecycleOwner
+                        ) { resultKey, bundle ->
+                            if (resultKey == "REQUEST_KEY") {
+                                val date = bundle.getString("SELECTED_DATE")
+                                dateOfBirth.text = date
+                            }
+                        }
+                        datePickerFragment.show(supportFragmentManager, "DatePickerFragment")
+                    }
+                }
+                binding.btnSend.setOnClickListener {
+                    binding.apply {
+                        if(edName.text.toString() == ""){
+                           Toast.makeText(requireActivity(), "Введите имя!", Toast.LENGTH_SHORT).show()
+                        } else if(edSurname.text.toString() == ""){
+                            Toast.makeText(requireActivity(), "Введите фамилию!", Toast.LENGTH_SHORT).show()
+                        } else if(edPatronymic.text.toString() == ""){
+                            Toast.makeText(requireActivity(), "Введите отчество!", Toast.LENGTH_SHORT).show()
+                        } else if(edSeries.text.toString() == ""){
+                            Toast.makeText(requireActivity(), "Введите серию паспорта!", Toast.LENGTH_SHORT).show()
+                        } else if(edNumber.text.toString() == ""){
+                            Toast.makeText(requireActivity(), "Введите номер паспорта!", Toast.LENGTH_SHORT).show()
+                        } else if(selectedImageUri == null) {
+                            Toast.makeText(requireActivity(), "Загрузите фотографию!", Toast.LENGTH_SHORT).show()
+                        } else {
+//                            val formatter = SimpleDateFormat("MM-dd-yyyy", Locale("Europe/Minsk"))
+//                            val dateOfBirth = formatter.parse(dateOfBirth.text.toString())
+                            val personDTO: PersonDTO = PersonDTO(
+                                name = edName.text.toString(),
+                                surname = edSurname.text.toString(),
+                                patronymic = edPatronymic.text.toString(),
+                                dateOfBirth = dateOfBirth.text.toString(),
+                                passportSeries = edSeries.text.toString(),
+                                passportNumber = edNumber.text.toString()
+                            )
+                            val body: MultipartBody.Part = uploadFile(selectedImageUri)
+                            viewModel.personRegistration(personDTO, body, requireActivity())
+
+                        }
+                    }
+
                 }
             }
         }
         observeShowMessageEvent()
         return binding.root
-    }
-
-    private fun initButton() {
-        binding.btDownload.visibility = View.VISIBLE
-        binding.etKeyws.visibility = View.GONE
-        binding.spinnerSearchScore.visibility = View.GONE
-        binding.btCancell.visibility = View.GONE
     }
 
     private fun validatePermission() {
@@ -176,10 +184,6 @@ class HomeForViewingPage2Fragment : Fragment(){
                 REQUEST_CODE_PICK_IMAGE -> {
                     selectedImageUri = data?.data
                     binding.imageView.setImageURI(selectedImageUri)
-                    binding.btDownload.visibility = View.GONE
-                    binding.etKeyws.visibility = View.VISIBLE
-                    binding.spinnerSearchScore.visibility = View.VISIBLE
-                    binding.btCancell.visibility = View.VISIBLE
                 }
             }
         }
@@ -204,34 +208,35 @@ class HomeForViewingPage2Fragment : Fragment(){
     }
 
     private fun configureTheAdapterForTheImage() {
-        imageAdapter = ImageAdapter(object  : ImageActionListener{
-            override fun onImageDetails(image: ImageAnswerDTO) {
+        saAdapter = AppAdapter(object  : SAActionListener{
+            override fun onDetails(sampleApplication: SampleApplication) {
                 TODO("Not yet implemented")
             }
-            override fun onImageSave(image: ImageAnswerDTO) {
-                viewModel.onImageSave(image.id)
+            override fun apply(sampleApplication: SampleApplication) {
+                if(viewModel.getRole() == Role.ROLE_PERSON.name)
+                    viewModel.applicationRegistration(sampleApplication.id)
             }
-            override fun copyLink(image: ImageAnswerDTO) {
+            override fun copyLink(sampleApplication: SampleApplication) {
                 val sendIntent: Intent = Intent().apply {
                     action = Intent.ACTION_SEND
-                    putExtra(Intent.EXTRA_TEXT, image.url)
+                    putExtra(Intent.EXTRA_TEXT, sampleApplication.url)
                     type = "text/plain"
                 }
                 val shareIntent = Intent.createChooser(sendIntent, null)
                 startActivity(shareIntent)
             }
         })
-        viewModel.images.observe(viewLifecycleOwner){
-            imageAdapter.imageAnswerDTOs = it
+        viewModel.sas.observe(viewLifecycleOwner){
+            saAdapter.sampleApplications = it
         }
         val layoutManagerAnnouncement = LinearLayoutManager(context)
-        binding.recyclerViewImage.layoutManager = layoutManagerAnnouncement
-        binding.recyclerViewImage.adapter = imageAdapter
-        val itemAnimatorAnnouncement = binding.recyclerViewImage.itemAnimator
+        binding.recyclerViewApp.layoutManager = layoutManagerAnnouncement
+        binding.recyclerViewApp.adapter = saAdapter
+        val itemAnimatorAnnouncement = binding.recyclerViewApp.itemAnimator
         if (itemAnimatorAnnouncement is DefaultItemAnimator){
             itemAnimatorAnnouncement.supportsChangeAnimations = false
         }
-        viewModel.getAllImages()
+        viewModel.getAllSA()
     }
 
     private fun observeShowMessageEvent() = viewModel.message.observeEvent(viewLifecycleOwner) {
@@ -240,27 +245,25 @@ class HomeForViewingPage2Fragment : Fragment(){
 
     private fun customizeScreen(b: Boolean, b1: Boolean) {
         binding.apply {
-            if (b) seeImages.visibility = View.VISIBLE
-            else seeImages.visibility = View.GONE
-            if (b1) createImage.visibility = View.VISIBLE
-            else createImage.visibility = View.GONE
+            if (b) seeApp.visibility = View.VISIBLE
+            else seeApp.visibility = View.GONE
+            if (b1) createPerson.visibility = View.VISIBLE
+            else createPerson.visibility = View.GONE
         }
     }
 
-    private fun seeSpinnerForSearchScore() {
-        val result = if (viewModel.getRole() == Role.ROLE_USER.name) {
-            SearchScore.values().filter {it.getValue() < 8}.toTypedArray()
-        } else
-            SearchScore.values()
-        val adapter: ArrayAdapter<SearchScore> = ArrayAdapter(
-            requireContext(),
-            android.R.layout.simple_spinner_item,
-            result
-        )
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        binding.spinnerSearchScore.adapter = adapter
-        binding.spinnerSearchScore.setSelection(5)
-    }
+//    private fun seeSpinnerForSearchScore() {
+//        val result = if (viewModel.getRole() == Role.ROLE_USER.name) {
+//            SearchScore.values().filter {it.getValue() < 8}.toTypedArray()
+//        } else
+//            SearchScore.values()
+//        val adapter: ArrayAdapter<SearchScore> = ArrayAdapter(
+//            requireContext(),
+//            android.R.layout.simple_spinner_item,
+//            result
+//        )
+//        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+//    }
 
     companion object {
         const val REQUEST_CODE_PICK_IMAGE = 101

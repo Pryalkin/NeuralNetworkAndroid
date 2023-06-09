@@ -1,7 +1,7 @@
 package com.bsuir.neural_network.app.repository
 
 import com.bsuir.neural_network.app.dto.LoginUserAnswerDTO
-import com.bsuir.neural_network.app.dto.UserDTO
+import com.bsuir.neural_network.app.dto.LoginUserDTO
 import com.bsuir.neural_network.app.dto.utils.HttpResponse
 import com.bsuir.neural_network.app.setting.AppSettings
 import com.bsuir.neural_network.sources.exception.BackendException
@@ -14,7 +14,7 @@ class AuthRepository(
     private val appSettings: AppSettings
 ) {
 
-    suspend fun login(userDTO: UserDTO): Response<LoginUserAnswerDTO> {
+    suspend fun login(userDTO: LoginUserDTO): Response<LoginUserAnswerDTO> {
         val res: Response<LoginUserAnswerDTO> = try {
             authSource.login(userDTO)
         } catch (e: Exception) {
@@ -31,7 +31,7 @@ class AuthRepository(
         return res
     }
 
-    suspend fun registration(userDTO: UserDTO): Response<HttpResponse> {
+    suspend fun registration(userDTO: LoginUserDTO): Response<HttpResponse> {
         val res: Response<HttpResponse> = try {
             authSource.registration(userDTO)
         } catch (e: Exception) {
