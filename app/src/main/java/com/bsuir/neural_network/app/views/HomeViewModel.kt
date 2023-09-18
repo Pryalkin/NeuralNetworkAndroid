@@ -2,15 +2,14 @@ package com.bsuir.neural_network.app.views
 
 import android.app.Activity
 import android.content.Intent
-import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bsuir.neural_network.Singletons
-import com.bsuir.neural_network.Singletons.cabinetRepository
+import com.bsuir.neural_network.app.dto.PersonAnswerDTO
 import com.bsuir.neural_network.app.dto.utils.HttpResponse
 import com.bsuir.neural_network.app.dto.utils.PersonDTO
-import com.bsuir.neural_network.app.dto.utils.SampleApplication
+import com.bsuir.neural_network.app.dto.utils.SampleApplicationDTO
 import com.bsuir.neural_network.app.repository.HomeRepository
 import com.bsuir.neural_network.app.screens.auth.MainActivity
 import com.bsuir.neural_network.app.utils.MutableLiveEvent
@@ -29,11 +28,11 @@ class HomeViewModel (
     private val _message = MutableLiveEvent<String>()
     val message = _message.share()
 
-    private val _sas = MutableLiveData<List<SampleApplication>>()
+    private val _sas = MutableLiveData<List<SampleApplicationDTO>>()
     val sas = _sas.share()
 
-    private val _image = MutableLiveData<SampleApplication>()
-    val sa = _image.share()
+    private val _people = MutableLiveData<List<PersonAnswerDTO>>()
+    val people = _people.share()
 
     private val _navigateToTabsEvent = MutableUnitLiveEvent()
     val navigateToTabsEvent = _navigateToTabsEvent.share()
@@ -44,7 +43,7 @@ class HomeViewModel (
 
     fun getAllSA() {
         viewModelScope.launch {
-            var res: Response<List<SampleApplication>> = homeRepository.getAllSA()
+            var res: Response<List<SampleApplicationDTO>> = homeRepository.getAllSA()
             if (res.isSuccessful){
                 _sas.value = res.body()
             } else {
@@ -61,7 +60,7 @@ class HomeViewModel (
         viewModelScope.launch {
             var res: Response<HttpResponse> = homeRepository.applicationRegistration(id)
             if (res.isSuccessful){
-                showToast("Вы успешно зарегистрировались!")
+                showToast("Вы успешно подали заявку!")
             } else {
                 val gson = GsonBuilder().setDateFormat("MM-dd-yyyy hh:mm:ss").create()
                 val mes = gson.fromJson(res.errorBody()!!.string(), HttpResponse::class.java).message
@@ -77,6 +76,45 @@ class HomeViewModel (
                 showToast("Вы успешно зарегистрировались!")
                 homeRepository.logout()
                 activity!!.startActivity(Intent(activity, MainActivity::class.java))
+            } else {
+                val gson = GsonBuilder().setDateFormat("MM-dd-yyyy hh:mm:ss").create()
+                val mes = gson.fromJson(res.errorBody()!!.string(), HttpResponse::class.java).message
+                showToast(mes)
+            }
+        }
+    }
+
+    fun getPeople() {
+        viewModelScope.launch {
+            var res: Response<List<PersonAnswerDTO>> = homeRepository.getPeople()
+            if (res.isSuccessful){
+                _people.value = res.body()
+            } else {
+                val gson = GsonBuilder().setDateFormat("MM-dd-yyyy hh:mm:ss").create()
+                val mes = gson.fromJson(res.errorBody()!!.string(), HttpResponse::class.java).message
+                showToast(mes)
+            }
+        }
+    }
+
+    fun add(id: Long) {
+        viewModelScope.launch {
+            var res: Response<HttpResponse> = homeRepository.add(id)
+            if (res.isSuccessful){
+                showToast("Вы успешно добавили нового сотрудника!")
+            } else {
+                val gson = GsonBuilder().setDateFormat("MM-dd-yyyy hh:mm:ss").create()
+                val mes = gson.fromJson(res.errorBody()!!.string(), HttpResponse::class.java).message
+                showToast(mes)
+            }
+        }
+    }
+
+    fun delete(id: Long) {
+        viewModelScope.launch {
+            var res: Response<HttpResponse> = homeRepository.delete(id)
+            if (res.isSuccessful){
+                showToast("Вы успешно удалили сотрудника!")
             } else {
                 val gson = GsonBuilder().setDateFormat("MM-dd-yyyy hh:mm:ss").create()
                 val mes = gson.fromJson(res.errorBody()!!.string(), HttpResponse::class.java).message

@@ -25,6 +25,10 @@ class LoginViewModel(
     private val _navigateToTabsEvent = MutableUnitLiveEvent()
     val navigateToTabsEvent = _navigateToTabsEvent.share()
 
+//    fun cleanToken(){
+//        authRepository.cleanToken();
+//    }
+
     fun login(userDTO: LoginUserDTO) {
         viewModelScope.launch {
             var res: Response<LoginUserAnswerDTO> = authRepository.login(userDTO)

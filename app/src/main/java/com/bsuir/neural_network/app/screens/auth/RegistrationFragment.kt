@@ -27,6 +27,7 @@ class RegistrationFragment : Fragment() {
         binding = FragmentRegistrationBinding.inflate(inflater, container, false)
         binding.apply {
             btnSend.setOnClickListener {
+                viewModel.cleanToken()
                 val userDTO = LoginUserDTO(
                     username = edLogin.text.toString(),
                     password = edPassword.text.toString(),

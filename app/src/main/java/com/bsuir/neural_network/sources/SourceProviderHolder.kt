@@ -50,9 +50,6 @@ object SourceProviderHolder {
         return OkHttpClient.Builder()
             .addInterceptor(createAuthorizationInterceptor(Singletons.appSettings))
             .addInterceptor(createLoggingInterceptor())
-            .connectTimeout(180, TimeUnit.SECONDS)
-            .writeTimeout(180, TimeUnit.SECONDS)
-            .readTimeout(180, TimeUnit.SECONDS)
             .build()
     }
 

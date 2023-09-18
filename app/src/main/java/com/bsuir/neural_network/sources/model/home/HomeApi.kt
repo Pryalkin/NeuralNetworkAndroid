@@ -1,7 +1,8 @@
 package com.bsuir.neural_network.sources.model.home
 
+import com.bsuir.neural_network.app.dto.PersonAnswerDTO
 import com.bsuir.neural_network.app.dto.utils.HttpResponse
-import com.bsuir.neural_network.app.dto.utils.SampleApplication
+import com.bsuir.neural_network.app.dto.utils.SampleApplicationDTO
 import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.*
@@ -9,7 +10,7 @@ import retrofit2.http.*
 interface HomeApi {
 
     @GET("sa/getAll")
-    suspend fun getAllSA(): Response<List<SampleApplication>>
+    suspend fun getAllSA(): Response<List<SampleApplicationDTO>>
 
     @Multipart
     @POST("person/registration")
@@ -25,5 +26,14 @@ interface HomeApi {
 
     @POST("application/registration")
     suspend fun applicationRegistration(@Query("id") id: Long): Response<HttpResponse>
+
+    @GET("person/get/people")
+    suspend fun getPeople(): Response<List<PersonAnswerDTO>>
+
+    @POST("person/add/manager")
+    suspend fun addManager(@Query("id") id: Long): Response<HttpResponse>
+
+    @POST("person/delete/manager")
+    suspend fun deleteManager(@Query("id") id: Long): Response<HttpResponse>
 
 }

@@ -51,4 +51,10 @@ class AuthRepository(
         appSettings.setCurrentRole("")
     }
 
+    fun cleanToken(){
+        appSettings.setCurrentToken("")
+        appSettings.setCurrentUsername("")
+        appSettings.setCurrentRole("")
+    }
+
 }

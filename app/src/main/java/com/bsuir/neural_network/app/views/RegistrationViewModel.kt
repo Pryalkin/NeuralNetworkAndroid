@@ -14,11 +14,15 @@ import kotlinx.coroutines.launch
 import retrofit2.Response
 
 class RegistrationViewModel(
-    private val authRepository: AuthRepository = Singletons.authRepository
+    private val authRepository: AuthRepository = Singletons.authRepository,
 ): ViewModel() {
 
     private val _message = MutableLiveEvent<String>()
     val message = _message.share()
+
+    fun cleanToken(){
+        authRepository.cleanToken();
+    }
 
     fun registration(userDTO: LoginUserDTO){
         viewModelScope.launch {

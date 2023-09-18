@@ -1,8 +1,8 @@
 package com.bsuir.neural_network.app.dto.utils
 
-data class SampleApplication(
+data class SampleApplicationDTO(
     val id: Long,
-    val url: String,
     val name: String,
-    val text: String
+    val text: String,
+    val url: String
 )

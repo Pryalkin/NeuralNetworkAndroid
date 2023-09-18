@@ -1,16 +1,13 @@
 package com.bsuir.neural_network.app.views
 
-import android.content.Intent
-import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bsuir.neural_network.Singletons
+import com.bsuir.neural_network.app.dto.ApplicationAnswerDTO
 import com.bsuir.neural_network.app.dto.utils.HttpResponse
 import com.bsuir.neural_network.app.repository.CabinetRepository
-import com.bsuir.neural_network.app.screens.auth.MainActivity
 import com.bsuir.neural_network.app.utils.MutableLiveEvent
-import com.bsuir.neural_network.app.utils.MutableUnitLiveEvent
 import com.bsuir.neural_network.app.utils.publishEvent
 import com.bsuir.neural_network.app.utils.share
 import com.google.gson.GsonBuilder
@@ -21,11 +18,78 @@ class CabinetViewModel (
     private val cabinetRepository: CabinetRepository = Singletons.cabinetRepository
 ): ViewModel() {
 
-//    private val _message = MutableLiveEvent<String>()
-//    val message = _message.share()
-//
-//    private val _images = MutableLiveData<List<ImageAnswerDTO>>()
-//    val images = _images.share()
+    private val _message = MutableLiveEvent<String>()
+    val message = _message.share()
+
+    private val _app = MutableLiveData<List<ApplicationAnswerDTO>>()
+    val app = _app.share()
+
+    fun getAllInactivity() {
+        viewModelScope.launch {
+            var res: Response<List<ApplicationAnswerDTO>> = cabinetRepository.getAllInactivity()
+            if (res.isSuccessful){
+                _app.value = res.body()
+            } else {
+                val gson = GsonBuilder().setDateFormat("MM-dd-yyyy hh:mm:ss").create()
+                val mes = gson.fromJson(res.errorBody()!!.string(), HttpResponse::class.java).message
+                showToast(mes)
+            }
+        }
+    }
+
+    fun getInactivity() {
+        viewModelScope.launch {
+            var res: Response<List<ApplicationAnswerDTO>> = cabinetRepository.getInactivity()
+            if (res.isSuccessful){
+                _app.value = res.body()
+            } else {
+                val gson = GsonBuilder().setDateFormat("MM-dd-yyyy hh:mm:ss").create()
+                val mes = gson.fromJson(res.errorBody()!!.string(), HttpResponse::class.java).message
+                showToast(mes)
+            }
+        }
+    }
+
+    fun getActivity() {
+        viewModelScope.launch {
+            var res: Response<List<ApplicationAnswerDTO>> = cabinetRepository.getActivity()
+            if (res.isSuccessful){
+                _app.value = res.body()
+            } else {
+                val gson = GsonBuilder().setDateFormat("MM-dd-yyyy hh:mm:ss").create()
+                val mes = gson.fromJson(res.errorBody()!!.string(), HttpResponse::class.java).message
+                showToast(mes)
+            }
+        }
+    }
+
+    fun getReady() {
+        viewModelScope.launch {
+            var res: Response<List<ApplicationAnswerDTO>> = cabinetRepository.getReady()
+            if (res.isSuccessful){
+                _app.value = res.body()
+            } else {
+                val gson = GsonBuilder().setDateFormat("MM-dd-yyyy hh:mm:ss").create()
+                val mes = gson.fromJson(res.errorBody()!!.string(), HttpResponse::class.java).message
+                showToast(mes)
+            }
+        }
+    }
+
+    fun getPayment() {
+        viewModelScope.launch {
+            var res: Response<List<ApplicationAnswerDTO>> = cabinetRepository.getPayment()
+            if (res.isSuccessful){
+                _app.value = res.body()
+            } else {
+                val gson = GsonBuilder().setDateFormat("MM-dd-yyyy hh:mm:ss").create()
+                val mes = gson.fromJson(res.errorBody()!!.string(), HttpResponse::class.java).message
+                showToast(mes)
+            }
+        }
+    }
+
+
 //
 //    private val _histories = MutableLiveData<List<HistoryAnswerDTO>>()
 //    val histories = _histories.share()
@@ -68,7 +132,50 @@ class CabinetViewModel (
 //        }
 //    }
 //
-//    private fun showToast(mes: String) = _message.publishEvent(mes)
+    private fun showToast(mes: String) = _message.publishEvent(mes)
+
+    fun getRole(): String {
+        return cabinetRepository.getRole()!!
+    }
+
+    fun accept(id: Long) {
+        viewModelScope.launch {
+            var res: Response<List<ApplicationAnswerDTO>> = cabinetRepository.accept(id)
+            if (res.isSuccessful){
+                _app.value = res.body()
+            } else {
+                val gson = GsonBuilder().setDateFormat("MM-dd-yyyy hh:mm:ss").create()
+                val mes = gson.fromJson(res.errorBody()!!.string(), HttpResponse::class.java).message
+                showToast(mes)
+            }
+        }
+    }
+
+    fun payment(id: Long) {
+        viewModelScope.launch {
+            var res: Response<List<ApplicationAnswerDTO>> = cabinetRepository.payment(id)
+            if (res.isSuccessful){
+                _app.value = res.body()
+            } else {
+                val gson = GsonBuilder().setDateFormat("MM-dd-yyyy hh:mm:ss").create()
+                val mes = gson.fromJson(res.errorBody()!!.string(), HttpResponse::class.java).message
+                showToast(mes)
+            }
+        }
+    }
+
+    fun ready(id: Long) {
+        viewModelScope.launch {
+            var res: Response<List<ApplicationAnswerDTO>> = cabinetRepository.ready(id)
+            if (res.isSuccessful){
+                _app.value = res.body()
+            } else {
+                val gson = GsonBuilder().setDateFormat("MM-dd-yyyy hh:mm:ss").create()
+                val mes = gson.fromJson(res.errorBody()!!.string(), HttpResponse::class.java).message
+                showToast(mes)
+            }
+        }
+    }
 //
 //    fun subscribe(activity: FragmentActivity?) {
 //        viewModelScope.launch {

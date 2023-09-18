@@ -31,6 +31,7 @@ class LoginFragment : Fragment() {
         binding = FragmentLoginBinding.inflate(inflater, container, false)
         binding.apply{
             binding.btnSend.setOnClickListener {
+//                viewModel.cleanToken()
                 val userDTO = LoginUserDTO(
                     username = edLogin.text.toString(),
                     password = edPassword.text.toString(),

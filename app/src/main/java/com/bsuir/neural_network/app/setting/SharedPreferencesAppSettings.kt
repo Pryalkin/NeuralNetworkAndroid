@@ -50,7 +50,6 @@ class SharedPreferencesAppSettings(
 
     override fun getCurrentRole(): String? = sharedPreferences.getString(PREF_CURRENT_ACCOUNT_ROLE, null)
 
-
     companion object {
         private const val PREF_CURRENT_ACCOUNT_TOKEN = "currentToken"
         private const val PREF_CURRENT_ACCOUNT_USERNAME = "currentUsername"

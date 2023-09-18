@@ -16,4 +16,24 @@
     <string name="storage_permission_rationale_message">In order to take a picture, you must grant this permission</string>
     <string name="storage_permission_denied_message">Storage permission is required in order to take a photo with the camera</string>
     <string name="copy">Копировать</string>
+    <string name="payment">Оплатить</string>
+    <string name="add">добавить</string>
+    <string name="delete">удалить</string>
+    <string name="accept">Принять</string>
+    <string name="ready">Готовый</string>
+
+    <string name="btn_simple_example">Simple Example</string>
+    <string name="btn_flexible_example">Flexible Example</string>
+
+    <string name="lbl_amount">Amount:</string>
+    <string name="lbl_ccy">Currency:</string>
+    <string name="lbl_email">Email:</string>
+    <string name="lbl_description">Description:</string>
+    <string name="btn_pay_google">GooglePay</string>
+    <string name="btn_pay_card">Pay by Card</string>
+    <string name="e_invalid_amount">Invalid amount</string>
+    <string name="e_invalid_email">Invalid email</string>
+    <string name="e_invalid_description">Enter description</string>
+    <string name="e_google_pay_unsupported">GooglePay is not supported</string>
+    <string name="e_google_pay_canceled">GooglePay has been canceled</string>
 </resources>

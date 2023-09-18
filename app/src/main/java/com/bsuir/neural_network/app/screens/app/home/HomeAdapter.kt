@@ -9,10 +9,10 @@ class HomeAdapter(fragmentActivity: FragmentActivity, var role: String) : Fragme
 
     override fun getItemCount(): Int {
         var count = when (role) {
-            Role.ROLE_ADMIN.name, Role.ROLE_USER.name -> {
+            Role.ROLE_USER.name -> {
                 2
             }
-            Role.ROLE_PERSON.name, Role.ROLE_MANAGER.name -> {
+            Role.ROLE_ADMIN.name, Role.ROLE_PERSON.name, Role.ROLE_MANAGER.name -> {
                 1
             }
             else -> {

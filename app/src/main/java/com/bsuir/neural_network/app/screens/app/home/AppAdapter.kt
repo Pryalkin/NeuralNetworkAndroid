@@ -8,18 +8,19 @@ import android.widget.PopupMenu
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bsuir.neural_network.R
-import com.bsuir.neural_network.app.dto.utils.SampleApplication
+import com.bsuir.neural_network.app.dto.utils.Role
+import com.bsuir.neural_network.app.dto.utils.SampleApplicationDTO
 import com.bsuir.neural_network.databinding.ItemAppBinding
 
 interface SAActionListener {
-    fun onDetails(sampleApplication: SampleApplication)
-    fun apply(sampleApplication: SampleApplication)
-    fun copyLink(sampleApplication: SampleApplication)
+    fun onDetails(sampleApplication: SampleApplicationDTO)
+    fun apply(sampleApplication: SampleApplicationDTO)
+    fun copyLink(sampleApplication: SampleApplicationDTO)
 }
 
 class SADiffCallback(
-    private val oldList: List<SampleApplication>,
-    private val newList: List<SampleApplication>
+    private val oldList: List<SampleApplicationDTO>,
+    private val newList: List<SampleApplicationDTO>
 ): DiffUtil.Callback() {
 
     override fun getOldListSize(): Int = oldList.size
@@ -40,12 +41,13 @@ class SADiffCallback(
 }
 
 class AppAdapter(
-    private val actionListener: SAActionListener
+    private val actionListener: SAActionListener,
+    private val role: String
 ) : RecyclerView.Adapter<AppAdapter.SAViewHolder>(), View.OnClickListener {
 
     class SAViewHolder(val binding: ItemAppBinding): RecyclerView.ViewHolder(binding.root)
 
-    var sampleApplications: List<SampleApplication> = emptyList()
+    var sampleApplications: List<SampleApplicationDTO> = emptyList()
         set(newValue) {
             val diffCallback = SADiffCallback(field, newValue)
             val diffResult = DiffUtil.calculateDiff(diffCallback)
@@ -75,22 +77,23 @@ class AppAdapter(
     override fun getItemCount(): Int = sampleApplications.size
 
     override fun onClick(v: View) {
-        val app = v.tag as SampleApplication
+        val app = v.tag as SampleApplicationDTO
         when (v.id){
             R.id.moreImageViewButton -> {
                 showPopupMenu(v)
             }
-            else -> {
-                actionListener.onDetails(app)
-            }
+//            else -> {
+//                actionListener.onDetails(app)
+//            }
         }
     }
 
     private fun showPopupMenu(v: View) {
         val popupMenu = PopupMenu(v.context, v)
         val context = v.context
-        val app = v.tag as SampleApplication
-        popupMenu.menu.add(0, APPLY, Menu.NONE, context.getString(R.string.save))
+        val app = v.tag as SampleApplicationDTO
+        if (role == Role.ROLE_PERSON.name)
+            popupMenu.menu.add(0, APPLY, Menu.NONE, context.getString(R.string.add))
         popupMenu.menu.add(1, COPY, Menu.NONE, context.getString(R.string.copy))
         popupMenu.setOnMenuItemClickListener{
             when (it.itemId){

@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import com.bsuir.neural_network.app.dto.utils.Role
 import com.bsuir.neural_network.app.views.HomeViewModel
 import com.bsuir.neural_network.databinding.FragmentHomeBinding
 import com.google.android.material.tabs.TabLayout
@@ -33,7 +34,10 @@ class HomeFragment : Fragment() {
         ) { tab, position ->
             when (position) {
                 0 -> {
-                    tab.text = "Заявки"
+                    if (role == Role.ROLE_ADMIN.name)
+                        tab.text = "Пользователи"
+                    else
+                        tab.text = "Заявки"
                 }
                 1 -> {
                     tab.text = "Регистрация"

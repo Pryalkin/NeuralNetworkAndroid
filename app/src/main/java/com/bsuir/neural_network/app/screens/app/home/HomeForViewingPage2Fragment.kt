@@ -19,9 +19,10 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bsuir.neural_network.R
+import com.bsuir.neural_network.app.dto.PersonAnswerDTO
 import com.bsuir.neural_network.app.dto.utils.PersonDTO
 import com.bsuir.neural_network.app.dto.utils.Role
-import com.bsuir.neural_network.app.dto.utils.SampleApplication
+import com.bsuir.neural_network.app.dto.utils.SampleApplicationDTO
 import com.bsuir.neural_network.app.utils.observeEvent
 import com.bsuir.neural_network.app.views.HomeViewModel
 import com.bsuir.neural_network.databinding.FragmentHomeForViewingPage2Binding
@@ -35,8 +36,6 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import java.io.File
-import java.text.SimpleDateFormat
-import java.util.*
 import kotlin.properties.Delegates
 
 class HomeForViewingPage2Fragment : Fragment(){
@@ -45,6 +44,7 @@ class HomeForViewingPage2Fragment : Fragment(){
     private lateinit var binding: FragmentHomeForViewingPage2Binding
     private val viewModel by viewModels<HomeViewModel>()
     private lateinit var saAdapter: AppAdapter
+    private lateinit var personAdapter: PersonAdapter
     private lateinit var myLauncher : ActivityResultLauncher<Intent>
 
     private var selectedImageUri: Uri? = null
@@ -74,7 +74,10 @@ class HomeForViewingPage2Fragment : Fragment(){
         when (pageNumber) {
             0 -> {
                 customizeScreen(b = true, b1 = false)
-                configureTheAdapterForTheImage()
+                if(viewModel.getRole() == Role.ROLE_ADMIN.name)
+                    configureTheAdapterForPerson()
+                else
+                    configureTheAdapterForTheImage()
             }
             1 -> {
                 customizeScreen(b = false, b1 = true)
@@ -135,6 +138,29 @@ class HomeForViewingPage2Fragment : Fragment(){
         }
         observeShowMessageEvent()
         return binding.root
+    }
+
+    private fun configureTheAdapterForPerson() {
+        personAdapter = PersonAdapter(object  : PersonActionListener{
+            override fun add(personAnswerDTO: PersonAnswerDTO) {
+                viewModel.add(personAnswerDTO.id)
+            }
+            override fun delete(personAnswerDTO: PersonAnswerDTO) {
+                viewModel.delete(personAnswerDTO.id)
+            }
+        })
+
+        viewModel.people.observe(viewLifecycleOwner){
+            personAdapter.people = it
+        }
+        val layoutManagerAnnouncement = LinearLayoutManager(context)
+        binding.recyclerViewApp.layoutManager = layoutManagerAnnouncement
+        binding.recyclerViewApp.adapter = personAdapter
+        val itemAnimatorAnnouncement = binding.recyclerViewApp.itemAnimator
+        if (itemAnimatorAnnouncement is DefaultItemAnimator){
+            itemAnimatorAnnouncement.supportsChangeAnimations = false
+        }
+        viewModel.getPeople()
     }
 
     private fun validatePermission() {
@@ -209,14 +235,16 @@ class HomeForViewingPage2Fragment : Fragment(){
 
     private fun configureTheAdapterForTheImage() {
         saAdapter = AppAdapter(object  : SAActionListener{
-            override fun onDetails(sampleApplication: SampleApplication) {
+            override fun onDetails(sampleApplication: SampleApplicationDTO) {
                 TODO("Not yet implemented")
             }
-            override fun apply(sampleApplication: SampleApplication) {
-                if(viewModel.getRole() == Role.ROLE_PERSON.name)
+            override fun apply(sampleApplication: SampleApplicationDTO) {
+                if(viewModel.getRole() == Role.ROLE_USER.name)
+                    Toast.makeText(requireActivity(), "Зарегистрируйтесь!", Toast.LENGTH_SHORT).show()
+                else
                     viewModel.applicationRegistration(sampleApplication.id)
             }
-            override fun copyLink(sampleApplication: SampleApplication) {
+            override fun copyLink(sampleApplication: SampleApplicationDTO) {
                 val sendIntent: Intent = Intent().apply {
                     action = Intent.ACTION_SEND
                     putExtra(Intent.EXTRA_TEXT, sampleApplication.url)
@@ -225,7 +253,7 @@ class HomeForViewingPage2Fragment : Fragment(){
                 val shareIntent = Intent.createChooser(sendIntent, null)
                 startActivity(shareIntent)
             }
-        })
+        }, viewModel.getRole())
         viewModel.sas.observe(viewLifecycleOwner){
             saAdapter.sampleApplications = it
         }

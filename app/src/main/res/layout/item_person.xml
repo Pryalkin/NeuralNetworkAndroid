@@ -8,30 +8,41 @@
     android:background="?android:attr/selectableItemBackground">
 
     <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="320dp"
-        android:layout_height="480dp"
-        android:layout_marginTop="10dp"
-        app:layout_constraintEnd_toEndOf="@+id/tvKeywords"
-        app:layout_constraintStart_toStartOf="@+id/tvKeywords"
-        app:layout_constraintTop_toBottomOf="@+id/tvKeywords"
-        tools:src="@drawable/ic_image" />
+        android:id="@+id/photoImageView"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:src="@drawable/ic_person" />
 
     <TextView
-        android:id="@+id/tvKeywords"
+        android:id="@+id/userNameTextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="15dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginEnd="15dp"
         android:ellipsize="end"
         android:lines="1"
         android:textColor="@color/black"
         android:textSize="16sp"
+        android:layout_marginStart="16dp"
         app:layout_constraintEnd_toStartOf="@+id/moreImageViewButton"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="KEYWORDS" />
+        app:layout_constraintStart_toEndOf="@+id/photoImageView"
+        app:layout_constraintTop_toTopOf="@+id/photoImageView"
+        tools:text="Romanov Evgeniy Alekseevich" />
+
+    <TextView
+        android:id="@+id/userEnrollTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:lines="1"
+        android:ellipsize="end"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toStartOf="@+id/moreImageViewButton"
+        app:layout_constraintStart_toStartOf="@+id/userNameTextView"
+        app:layout_constraintTop_toBottomOf="@+id/userNameTextView"
+        tools:text="Email: romanov@gmail.com" />
 
     <ImageView
         android:id="@+id/moreImageViewButton"
@@ -43,19 +54,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:src="@drawable/ic_more" />
-
-    <androidx.constraintlayout.widget.Barrier
-        android:id="@+id/barrier"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:barrierDirection="bottom"
-        app:constraint_referenced_ids="imageView"
-        tools:layout_editor_absoluteY="124dp" />
-
-    <Space
-        android:layout_width="wrap_content"
-        android:layout_height="6dp"
-        app:layout_constraintTop_toBottomOf="@id/barrier"
-        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
